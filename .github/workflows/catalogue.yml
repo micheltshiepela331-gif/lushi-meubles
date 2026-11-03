@@ -1,0 +1,26 @@
+name: Construire le catalogue de meubles
+on:
+  push:
+    paths:
+      - 'sources/**'
+      - 'build.mjs'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Convertir les meubles
+        run: node build.mjs
+      - name: Enregistrer
+        run: |
+          git config user.name "lushi-meubles-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add meubles catalogue.json
+          git diff --cached --quiet || git commit -m "Catalogue mis à jour"
+          git push
